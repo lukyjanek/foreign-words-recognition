@@ -10,10 +10,9 @@ import itertools as it
 # function for the recognition of foreign word
 # can be imported and used in any project
 def recog_foreign_word(word, pos=None):
-    '''Return True statement if given word (and pos optionaly) is foreign.'''
+    '''Return T/F statement if given word (and pos optionaly) is foreign.'''
     word = word.lower()
 
-    # PART1: universal rules for all pos
     # foreign letters
     for letter in 'gxwqóf':
         if letter in word:
@@ -53,22 +52,28 @@ def recog_foreign_word(word, pos=None):
 
     # unrespected y followed by mixed consonants (b, l, m, p, s, v, z)
     vowels_long = 'áéíýůú'
-    vowels_all = 'aeiyouáéíýůú'
+    vowels_all = 'aeiyouáéěíýůú'
 
-    by = ['byt', 'byl', 'aby', 'kdyby', 'čby', 'bych', 'bys@', 'byste', 'byv',
-          'bydl', 'byč', 'byst', 'bysl']
-    ly = ['slyš', 'mlyn', 'lyka', 'lyká', 'plyn', 'vzlyk', 'lysý', 'lysi',
-          'lyso', 'lysic', 'lyž', 'lyň', 'plyš']
-    my = ['myd', 'myt', 'myč', 'myc', 'myj', 'mysl', 'myšl', 'myl', 'hmyz',
-          'myš', 'myk', 'mych']
-    py = ['pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká']
-    sy = ['syn@', 'synVA', 'sysl', 'syse', 'sytVA', 'syt@', 'syre',
-          'syro', 'sychr', 'sycha', 'syč', 'syk', 'syp']
-    vy = ['vys', 'vyš', 'vyk', 'vyd', 'vyž', '#vy']
-    zy = ['brzy', 'jazyk', 'jazyl', 'zýv']
+    all_patterns = {'by': ['byt', 'byl', 'aby', 'kdyby', 'čby', 'bych',
+                           'bys@', 'byste', 'byv', 'bydl', 'byč', 'byst',
+                           'bysl'],
 
-    all_patterns = {'by': by, 'ly': ly, 'my': my, 'py': py,
-                    'sy': sy, 'vy': vy, 'zy': zy}
+                    'ly': ['slyš', 'mlyn', 'lyka', 'lyká', 'plyn', 'vzlyk',
+                           'lysý', 'lysi', 'lyso', 'lysic', 'lyž', 'lyň',
+                           'plyš'],
+
+                    'my': ['myd', 'myt', 'myč', 'myc', 'myj', 'mysl', 'myšl',
+                           'myl', 'hmyz', 'myš', 'myk', 'mych'],
+
+                    'py': ['pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká'],
+
+                    'sy': ['syn@', 'synVA', 'sysl', 'syse', 'sytVA', 'syt@',
+                           'syre', 'syro', 'sychr', 'sycha', 'syč', 'syk',
+                           'syp'],
+
+                    'vy': ['vys', 'vyš', 'vyk', 'vyd', 'vyž', '#vy'],
+
+                    'zy': ['brzy', 'jazyk', 'jazyl', 'zýv']}
 
     for name, patterns in all_patterns.items():
         checked = word
@@ -110,18 +115,55 @@ def recog_foreign_word(word, pos=None):
     if 'VnC' in transcribed or 'Vmb' in transcribed or 'Vmp' in transcribed:
         return word, 7, True
 
-    # PART2: rules according to a specific pos
-    if pos == 'N' or pos is None:  # nouns and unspecific
-        pass
+    # ends with long vowel or consists of 'ú' inside
+    vowels_long = 'áéóůú'
+    for letter in vowels_long:
+        if word.endswith(letter):
+            return word, 8, True
 
-    if pos == 'V' or pos is None:  # verbs and unspecific
-        pass
+    if 'ú' in word[1:]:
+        return word, 9, True
 
-    if pos == 'A' or pos is None:  # adjectives and unspecific
-        pass
+    # foreign morphemes
+    # TODO: increase accuracy (add derivations as 'áž-ní', 'áž-ně';
+        # check short pre-/suf-fixes; segmentation); invent testing data
+        # and evaluate (preccision, recall, F1 score)
+    suffixes = ['áž', 'ce', 'en', 'én', 'er', 'ér', 'ie', 'ik', 'in', 'ín',
+                'ns', 'on', 'ón', 'or', 'oř', 'os', 'sa', 'se', 'ta', 'um',
+                'us', 'za', 'ze', 'ace', 'ant', 'bal', 'bus', 'ent', 'eus',
+                'fil', 'fob', 'for', 'ice', 'ida', 'ika', 'ina', 'ína', 'ing',
+                'ink', 'ism', 'ita', 'log', 'man', 'men', 'nom', 'ona', 'óna',
+                'tel', 'tor', 'una', 'úna', 'ura', 'úra', 'urg', 'ální',
+                'álný', 'ánní', 'ánný', 'ární', 'árný', 'átní', 'átný',
+                'átor', 'énní', 'énný', 'erie', 'érie', 'érní', 'érný',
+                'ézní', 'ézný', 'ický', 'ilní', 'ilný', 'ista', 'itor',
+                'ivní', 'ívní', 'ivný', 'ívný', 'orní', 'orný', 'ózní',
+                'ózný', 'stor', 'teka', 'téka', 'tura', 'antní', 'antný',
+                'asmus', 'atura', 'bilní', 'bilný', 'dozer', 'entní', 'entný',
+                'eskní', 'eskný', 'esmus', 'fobie', 'iální', 'iálný', 'ismus',
+                'itura', 'izace', 'izmus', 'logie', 'vální', 'válný',
+                'fikace', 'írovat', 'izovat', 'ýrovat', 'ebilita', 'ekalita',
+                'ibilita', 'ikalita']
 
-    if pos == 'D' or pos is None:  # adverbs and unspecific
-        pass
+    prefixes = ['ab', 'an', 'bi', 'de', 'di', 'em', 'en', 'ex', 'im',
+                'in', 'ko', 're', 'ana', 'ant', 'apo', 'des', 'dez', 'dia',
+                'dis', 'dys', 'epi', 'kom', 'kon', 'non', 'par', 'per', 'pre',
+                'pro', 'sub', 'sur', 'aero', 'ante', 'anti', 'arci', 'fero',
+                'foto', 'hypo', 'kata', 'kino', 'maxi', 'meta', 'mini',
+                'para', 'tele', 'gramo', 'hyper', 'infra', 'inter', 'intra',
+                'intro', 'makro', 'mikro', 'radio', 'rádio', 'super', 'supra',
+                'tacho', 'trans', 'ultra', 'kontra', 'pseudo', 'techno',
+                'elektro', 'magneto']
+
+    for suffix in suffixes:
+        if word.endswith(suffix):
+            if len(word.replace(suffix, '')) > 2:
+                return word, 10, True
+
+    for prefix in prefixes:
+        if word.startswith(prefix):
+            if len(word.replace(prefix, '')) > 2:
+                return word, 11, True
 
     return word, False
 
