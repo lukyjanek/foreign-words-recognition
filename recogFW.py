@@ -1,7 +1,7 @@
 #!usr/bin/env python3
 # coding: utf-8
 
-'''Script for the recognition of foreign words in the Czech language.'''
+"""Script for the recognition of foreign words in the Czech language."""
 
 import sys
 import itertools as it
@@ -9,14 +9,23 @@ import itertools as it
 
 # function for the recognition of foreign word
 # can be imported and used in any project
-def recog_foreign_word(word, pos=None):
+def recog_foreign_word(word):
     '''Return T/F statement if given word (and pos optionaly) is foreign.'''
     word = word.lower()
 
-    # foreign letters
+    # foreign letters and czech alphabet
     for letter in 'gxwqóf':
         if letter in word:
-            return word, 1, True
+            return True
+
+    alphabeth = 'aábcčdďeéěhiíjklmnňoprřsštťuůúvyýzž'
+    for letter in word:
+        if letter not in alphabeth:
+            return True
+
+    # consists 'ú' inside the word
+    if 'ú' in word[1:]:
+        return True
 
     # combinations of vowels (except 'ou' and 'oo')
     vowels = 'aeiyouáéěíýůú'
@@ -28,52 +37,73 @@ def recog_foreign_word(word, pos=None):
     for pair in combinations:
         comb = pair[0] + pair[1]
         if comb in word:
-            return word, 2, True
+            return True
 
-    # unrespected palatalization
-    palatal_vowels = 'eéií'
-    for pair in list(it.product(('k', 'h', 'ch', 'r'), palatal_vowels)):
-        comb = pair[0] + pair[1]
+    # combinations of consonants (doubled consonants)
+    consonants = 'bcfghlmpqrstvwx'
+    for letter in consonants:
+        if letter + letter in word:
+            return True
+
+    # unrespected palatalization after k, h, ch, r
+    ke_allowed = ('kerý', 'kev', 'keř', 'kenní', 'keřný', 'keřně', 'kelný',
+                  'kelně')
+    re_allowed = ('rev', 'rec', 'revný', 'revně', 'rek', 'recký', 'recky',
+                  'rectví', 'rectvo', 'reček', 'rečka', 'rečník', 'rejší')
+
+    for comb in ('re', 'ke'):
+        res = True
         if comb in word:
-            return word, 3, True
+            for end in eval(comb + '_allowed'):
+                if word.endswith(end):
+                    res = True
+
+            if res is False:
+                return True
+
+    if 'he' in word and 'herec' not in word and 'hereč' not in word:
+        return True
+
+    if 'che' in word:
+        return True
 
     # unrespected soft and hard consonants
     hard_consonants = ('h', 'ch', 'k', 'r')
     for pair in list(it.product(hard_consonants, 'ií')):
         comb = pair[0] + pair[1]
         if comb in word:
-            return word, 4, True
+            return True
 
     soft_consonants = 'žščřcj'
     for pair in list(it.product(soft_consonants, 'yý')):
         comb = pair[0] + pair[1]
         if comb in word:
-            return word, 5, True
+            return True
 
     # unrespected y followed by mixed consonants (b, l, m, p, s, v, z)
     vowels_long = 'áéíýůú'
     vowels_all = 'aeiyouáéěíýůú'
 
-    all_patterns = {'by': ['byt', 'byl', 'aby', 'kdyby', 'čby', 'bych',
+    all_patterns = {'by': ('byt', 'byl', 'aby', 'kdyby', 'čby', 'bych',
                            'bys@', 'byste', 'byv', 'bydl', 'byč', 'byst',
-                           'bysl'],
+                           'bysl'),
 
-                    'ly': ['slyš', 'mlyn', 'lyka', 'lyká', 'plyn', 'vzlyk',
+                    'ly': ('slyš', 'mlyn', 'lyka', 'lyká', 'plyn', 'vzlyk',
                            'lysý', 'lysi', 'lyso', 'lysic', 'lyž', 'lyň',
-                           'plyš'],
+                           'plyš'),
 
-                    'my': ['myd', 'myt', 'myč', 'myc', 'myj', 'mysl', 'myšl',
-                           'myl', 'hmyz', 'myš', 'myk', 'mych'],
+                    'my': ('myd', 'myt', 'myč', 'myc', 'myj', 'mysl', 'myšl',
+                           'myl', 'hmyz', 'myš', 'myk', 'mych'),
 
-                    'py': ['pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká'],
+                    'py': ('pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká'),
 
-                    'sy': ['syn@', 'synVA', 'sysl', 'syse', 'sytVA', 'syt@',
+                    'sy': ('syn@', 'synVA', 'sysl', 'syse', 'sytVA', 'syt@',
                            'syre', 'syro', 'sychr', 'sycha', 'syč', 'syk',
-                           'syp'],
+                           'syp'),
 
-                    'vy': ['vys', 'vyš', 'vyk', 'vyd', 'vyž', '#vy'],
+                    # 'vy': ('vys', 'vyš', 'vyk', 'vyd', 'vyž', '#vy'),
 
-                    'zy': ['brzy', 'jazyk', 'jazyl', 'zýv']}
+                    'zy': ('brzy', 'jazyk', 'jazyl', 'zýv')}
 
     for name, patterns in all_patterns.items():
         checked = word
@@ -97,7 +127,7 @@ def recog_foreign_word(word, pos=None):
                 checked = checked.replace(pattern, '$')
 
         if name in checked:
-            return word, 6, True
+            return True
 
     # borrowed nasalisation pattern
     consonants = 'cdghjklrstvzščřžďťň'
@@ -113,77 +143,130 @@ def recog_foreign_word(word, pos=None):
             transcribed += letter
 
     if 'VnC' in transcribed or 'Vmb' in transcribed or 'Vmp' in transcribed:
-        return word, 7, True
+        return True
 
-    # ends with long vowel or consists of 'ú' inside
-    vowels_long = 'áéóůú'
-    for letter in vowels_long:
-        if word.endswith(letter):
-            return word, 8, True
-
-    if 'ú' in word[1:]:
-        return word, 9, True
-
-    # foreign morphemes
-    # TODO: increase accuracy (add derivations as 'áž-ní', 'áž-ně';
-        # check short pre-/suf-fixes; segmentation); invent testing data
-        # and evaluate (preccision, recall, F1 score)
-    suffixes = ['áž', 'ce', 'en', 'én', 'er', 'ér', 'ie', 'ik', 'in', 'ín',
+    # foreign morphemes (suffixes, derived suffixes, prefixes, infixes)
+    suffixes = ('áž', 'ce', 'en', 'én', 'er', 'ér', 'ie', 'ik', 'in', 'ín',
                 'ns', 'on', 'ón', 'or', 'oř', 'os', 'sa', 'se', 'ta', 'um',
-                'us', 'za', 'ze', 'ace', 'ant', 'bal', 'bus', 'ent', 'eus',
-                'fil', 'fob', 'for', 'ice', 'ida', 'ika', 'ina', 'ína', 'ing',
-                'ink', 'ism', 'ita', 'log', 'man', 'men', 'nom', 'ona', 'óna',
-                'tel', 'tor', 'una', 'úna', 'ura', 'úra', 'urg', 'ální',
-                'álný', 'ánní', 'ánný', 'ární', 'árný', 'átní', 'átný',
-                'átor', 'énní', 'énný', 'erie', 'érie', 'érní', 'érný',
-                'ézní', 'ézný', 'ický', 'ilní', 'ilný', 'ista', 'itor',
-                'ivní', 'ívní', 'ivný', 'ívný', 'orní', 'orný', 'ózní',
-                'ózný', 'stor', 'teka', 'téka', 'tura', 'antní', 'antný',
-                'asmus', 'atura', 'bilní', 'bilný', 'dozer', 'entní', 'entný',
-                'eskní', 'eskný', 'esmus', 'fobie', 'iální', 'iálný', 'ismus',
-                'itura', 'izace', 'izmus', 'logie', 'vální', 'válný',
-                'fikace', 'írovat', 'izovat', 'ýrovat', 'ebilita', 'ekalita',
-                'ibilita', 'ikalita']
-
-    prefixes = ['ab', 'an', 'bi', 'de', 'di', 'em', 'en', 'ex', 'im',
-                'in', 'ko', 're', 'ana', 'ant', 'apo', 'des', 'dez', 'dia',
-                'dis', 'dys', 'epi', 'kom', 'kon', 'non', 'par', 'per', 'pre',
-                'pro', 'sub', 'sur', 'aero', 'ante', 'anti', 'arci', 'fero',
-                'foto', 'hypo', 'kata', 'kino', 'maxi', 'meta', 'mini',
-                'para', 'tele', 'gramo', 'hyper', 'infra', 'inter', 'intra',
-                'intro', 'makro', 'mikro', 'radio', 'rádio', 'super', 'supra',
-                'tacho', 'trans', 'ultra', 'kontra', 'pseudo', 'techno',
-                'elektro', 'magneto']
+                'má', 'us', 'za', 'ze', 'ace', 'ant', 'bal', 'bus', 'ent',
+                'eus', 'fil', 'fob', 'for', 'ice', 'ida', 'ika', 'ina', 'ína',
+                'ing', 'ink', 'ism', 'ita', 'ián', 'log', 'man', 'mat', 'men',
+                'nom', 'ona', 'óna', 'tor', 'una', 'úna', 'ura', 'úra', 'urg',
+                'fon', 'ální', 'iana', 'gate', 'graf', 'álný', 'ánní', 'ánný',
+                'ární', 'árný', 'átní', 'átný', 'átor', 'énní', 'énný', 'erie',
+                'érie', 'érní', 'érný', 'ézní', 'ézný', 'ický', 'ilní', 'ilný',
+                'ista', 'itor', 'ivní', 'ívní', 'ivný', 'ívný', 'orní', 'orný',
+                'ózní', 'ózný', 'stor', 'teka', 'téka', 'tura', 'antní',
+                'antný', 'asmus', 'atura', 'bilní', 'bilný', 'dozer', 'entní',
+                'entný', 'manie', 'mánie', 'holik', 'filie', 'grafie',
+                'kracie', 'eskní', 'eskný', 'esmus', 'fobie', 'iální', 'iálný',
+                'ismus', 'itura', 'izace', 'izmus', 'logie', 'vální', 'válný',
+                'fikace', 'írovat', 'izovat', 'ýrovat', 'lizovat', 'lisovat',
+                'ebilita', 'ekalita', 'ibilita', 'ikalita')
 
     for suffix in suffixes:
         if word.endswith(suffix):
             if len(word.replace(suffix, '')) > 2:
-                return word, 10, True
+                return True
+
+    deriv_suf = ('ážní', 'ážně', 'ážový', 'ážovost', 'ážovat', 'ážovaný',
+                 'ážovaně', 'ážování', 'ážovanost', 'ážovatelný', 'ážovatelně',
+                 'ážovatelnost', 'ční', 'čně', 'enový', 'enní', 'énový',
+                 'énovost', 'énově', 'ének', 'éneček', 'énkový', 'erový',
+                 'erský', 'erovský', 'érka', 'érčin', 'érský', 'érskost',
+                 'érsky', 'érství', 'érův', 'érový', 'ikův', 'inový', 'inův',
+                 'ínka', 'ínův', 'ínový', 'ínčin', 'ínově', 'ínovost', 'ínský',
+                 'ónový', 'ónek', 'ónka', 'ónově', 'ónovost', 'orka', 'orčin',
+                 'orův', 'orský', 'orskost', 'orsky', 'ační', 'ačně', 'antka',
+                 'balový', 'balově', 'balovost', 'busový', 'busově',
+                 'busovost', 'entní', 'entský', 'entův', 'entka', 'entčin',
+                 'entskost', 'entsky', 'filní', 'filský', 'filův', 'filně',
+                 'filsky', 'filskost', 'filka', 'fobka', 'fobův', 'fobní',
+                 'idový', 'idově', 'ingový', 'ingově', 'ingovost', 'inkový',
+                 'inkově', 'inkovost', 'iánův', 'iánský', 'iánsky', 'logův',
+                 'ložka', 'ložčin', 'logově', 'logický', 'logiskost', 'matový',
+                 'matka', 'matčík', 'matův', 'menský', 'menův', 'mensky',
+                 'menskost', 'nomka', 'nomický', 'nomův', 'nomčin', 'ónka',
+                 'torka', 'torčin', 'torův', 'torský', 'torsky', 'torskost',
+                 'urní', 'urně', 'urista', 'uristka', 'álně', 'álnost', 'ánně',
+                 'árně', 'árnost', 'átně', 'átnost', 'átorka', 'átorův',
+                 'átorčin', 'énně', 'mer', 'érně', 'érnost', 'ézně', 'éznost',
+                 'ickost', 'ilně', 'ilnost', 'istický', 'isticky', 'istickost',
+                 'istka', 'istův', 'itorka', 'itorský', 'itorčin', 'itorsky',
+                 'itorův', 'ivně', 'ivnost', 'ívně', 'ívnost', 'orně',
+                 'ornost', 'ózně', 'óznost', 'storka', 'storčin', 'storský',
+                 'storův', 'teční', 'turní', 'turka', 'turový', 'turně',
+                 'antně', 'antnost', 'aturní', 'aturně', 'aturka', 'bilně',
+                 'bilnost', 'dozerista', 'dozeristka', 'dozeristův', 'entně',
+                 'entnost', 'manický', 'manickost', 'manicky', 'maniak',
+                 'holička', 'holikův', 'holiččin', 'holický', 'holickost',
+                 'holicky', 'holismus', 'kratický', 'kratickost', 'kraticky',
+                 'eskně', 'esknost', 'fobický', 'iálně', 'iálnost', 'izační',
+                 'izačně', 'válně', 'válnost', 'fikační', 'fikačně', 'írovací',
+                 'izovací', 'ýrovací', 'ibilitový', 'ibilitově', 'ibilitovost',
+                 'izovaný', 'izovatelný', 'izování', 'izovávat', 'írovaný',
+                 'írovatelný', 'írovávat', 'ýrovaný', 'ýrovatelný', 'ýrovávat',
+                 'izovatelně', 'izovatelnost', 'írovatelně', 'írovatelnost',
+                 'ýrovatelně', 'írovatelnost', 'lizující', 'lisující',
+                 'lizace', 'lisace', 'lizační', 'lisační', 'lizačně',
+                 'lisačně', 'lizovací', 'lisovací', 'lizovaný', 'lisovaný',
+                 'lizování', 'lisování', 'lizovatelný', 'lisovatelný',
+                 'lizovaně', 'lisovaně', 'lizovatelnost', 'lisovatelnost',
+                 'lizovanost', 'lisovanost', 'fonista', 'fonistka', 'fonistův',
+                 'fonistčin', 'fonní', 'fonně', 'fonový', 'fonově', 'fonovost')
+
+    for suffix in deriv_suf:
+        if word.endswith(suffix):
+            if len(word.replace(suffix, '')) > 2:
+                return True
+
+    prefixes = ('ab', 'ad', 'an', 'bi', 'de', 'di', 'em', 'en', 'ex', 'im',
+                'ks', 'kš', 'in', 'ko', 're', 'ana', 'ant', 'apo', 'ato',
+                'azo', 'bio', 'des', 'dez', 'dia', 'dis', 'dys', 'eko', 'epi',
+                'erc', 'geo', 'izo', 'kom', 'kon', 'neo', 'non', 'par', 'per',
+                'pre', 'pro', 'sub', 'sur', 'aero', 'agro', 'ante', 'anti',
+                'arci', 'auto', 'demo', 'etno', 'euro', 'fero', 'foto', 'giga',
+                'hypo', 'info', 'kata', 'keto', 'kino', 'lino', 'maxi', 'mega',
+                'meta', 'mini', 'mono', 'moto', 'para', 'peta', 'poly', 'post',
+                'taxi', 'tele', 'tera', 'velo', 'vice', 'amino', 'cyber',
+                'disko', 'extra', 'femto', 'gramo', 'hydro', 'hyper', 'infra',
+                'inter', 'intra', 'intro', 'krimi', 'kupro', 'kvazi', 'kyber',
+                'makro', 'mikro', 'nitro', 'porno', 'profi', 'proto', 'quasi',
+                'radio', 'rádio', 'rekta', 'retro', 'servo', 'steno', 'super',
+                'supra', 'tacho', 'termo', 'trafo', 'trans', 'turbo', 'ultra',
+                'vibro', 'video', 'astro', 'mezzo', 'metyl', 'multi', 'balneo',
+                'energo', 'kontra', 'pseudo', 'stereo', 'techno', 'elektro',
+                'travest', 'galvano', 'magneto', 'sciento', 'elektron')
 
     for prefix in prefixes:
         if word.startswith(prefix):
-            if len(word.replace(prefix, '')) > 2:
-                return word, 11, True
+            return True
 
-    return word, False
+    infixes = ('ajc', 'ajs', 'ajz', 'unk', 'uňk', 'th', 'rm')
 
+    for infix in infixes:
+        if infix in word:
+            return True
 
-# internal function for splitting input data if script is used in shell
-def split_data(line):
-    '''Return word and pos splited from stdin/file line. Separator is \t.'''
-    word = None
-    pos = None
+    if 'ir' in word and not ('šir' in word or 'řir' in word):
+        return True
 
-    if len(line.split('\t')) == 1:
-        word = line.split('\t')[0]
-        pos = None
-    else:
-        word, pos = line.split('\t')
+    if 'sc' in word and 'sch' not in word:
+        return True
 
-    if pos not in ('V', 'N', 'D', 'A'):  # allowed pos
-        pos = None
+    # physical quantities
+    quantities = ('lumen', 'ampér', 'volt', 'ohm', 'metr', 'gram', 'litr',
+                  'kelvin', 'kandela', 'mol', 'candela', 'radián', 'steradián',
+                  'hertz', 'newton', 'pascal', 'joule', 'byte', 'watt', 'lux',
+                  'coulomb', 'farad', 'siemens', 'weber', 'tesla', 'henry',
+                  'sievert', 'parsek', 'alko')
 
-    return word, pos
+    for quantity in quantities:
+        if quantity in word:
+            return True
+
+    # non-foreign word
+    return False
 
 
 # running script if it is used in shell (with stdin or path to file)
@@ -191,15 +274,15 @@ if __name__ == '__main__':
 
     if not sys.stdin.isatty():  # read from stdin
         for line in sys.stdin:
-            word, pos = split_data(line.strip())
-            print(recog_foreign_word(word, pos))
+            word = line.strip()
+            print(word, recog_foreign_word(word), sep='\t')
 
     else:  # read from file
         if len(sys.argv) == 2:
             with open(sys.argv[1], mode='r', encoding='utf-8') as f:
                 for line in f:
-                    word, pos = split_data(line.strip())
-                    print(recog_foreign_word(word, pos))
+                    word = line.strip()
+                    print(word, recog_foreign_word(word), sep='\t')
         else:
             print('Error: Use script in pipeline or give the path '
                   'to the relevant file in the first argument.')
