@@ -1,7 +1,6 @@
 # Recognition of foreign words in the Czech language
 This repository contains codes of rule-based approach to the recognition of borrowed foreign words in the Czech language. Used rules are based on the study of so far published linguistic papers (listed bellow).
 
---
 *Supported by Student's Faculty Grant (SFG) at [Faculty of Mathematics and Physics, Charles University](https://www.mff.cuni.cz/), in the academic year 2017/2018.*
 
 ## Usage
@@ -32,7 +31,7 @@ python3 recogFW.py 'path-to-input-file' > 'results.tsv'
 ## Based on these studies and resources
 - POGNAN, Patrice. **Une reconnaissance automatique des mots étrangers dans les textes scientifiques**: Un essai en langue tchéque. The Prague Bulletin of Mathematical Linguistics. Prague: Charles University, 1983, 40(1), 31-42. ISSN 0032-6585.
 - DOKULIL, Miloš & Jaroslav KUCHAŘ. **Slovotvorná charakteristika cizích slov**. Naše řeč. Prague: Czech Language Institute, Academy of Science, 1977, 60(4), 196-185. ISSN 2571-0893.
---
+
 - **Mluvnice češtiny 1**: *Fonetika, fonologie, morfonologie a morfematika, tvoření slov*. Prague: Academia, 1986.
 - **Mluvnice češtiny 2**: *Tvarosloví*. Prague: Academia, 1986.
 - MARTINCOVÁ, Olga & Nikolaj SAVICKÝ. **Hybridní slova a některé obecné otázky neologie**.  *Slovo a slovesnost*. Prague: Czech Language Institute, Academy of Science, 1987,  48(2), 124-139. ISSN 0037-7031.
@@ -45,6 +44,6 @@ python3 recogFW.py 'path-to-input-file' > 'results.tsv'
 - NEKULA, Marek. **Hierarchie výpůjček**. KARLÍK, Petr, Marek NEKULA a Jana PLESKALOVÁ, ed.  *Nový encyklopedický slovník češtiny*. Prague: NLN, Nakladatelství Lidové noviny, 2016. ISBN 978-80-7422-482-9.
 - NEKULA, Marek. **Výpůjčka (přejímka)**. KARLÍK, Petr, Marek NEKULA a Jana PLESKALOVÁ, ed.  *Nový encyklopedický slovník češtiny*. Prague: NLN, Nakladatelství Lidové noviny, 2016. ISBN 978-80-7422-482-9.
 - PRAVDOVÁ, Markéta & Ivana SVOBODOVÁ, ed.  **Akademická příručka českého jazyka**. Prague: Academia, 2014. ISBN 978-80-200-2327-8.
---
+
 - KŘEN, Michal, Václav CVRČEK, Tomáš ČAPKA, et al.  **SYN2015**: *reprezentativní korpus psané češtiny*. Prague: Ústav Českého národního korpusu FF CUNI, 2015.
 - VIDRA, Jonáš, Zdeněk ŽABOKRTSKÝ, Magda ŠEVČÍKOVÁ, et al.  **DeriNet**: *Word-Formation Network for Czech*. Prague: Institute of Formal and Applied Linguistics, MFF CUNI, 2017.
