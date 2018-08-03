@@ -21,24 +21,27 @@ tn = 0  # true negatives
 fp = 0  # false positives
 tp = 0  # true positives
 
+fp_lst = list()
 for entry in gold_data:
     alg_res = recog_foreign_word(entry[1])
+
     if entry[0] == '+' and alg_res:
         tp += 1
-    elif entry[0] == '' and not alg_res:
-        fp += 1
     elif entry[0] == '+' and not alg_res:
+        fn += 1
+    elif entry[0] == '' and not alg_res:
         tn += 1
     elif entry[0] == '' and alg_res:
-        fn += 1
+        fp += 1
     else:
         print('Problem with:', entry)
 
-precision = (tp + fp) / len(gold_data)
-recall = tp / (tp + fn)
+precision = tp / (tp + fp) if tp + fp > 0 else 0.0
+recall = tp / (tp + fn) if tp + fn > 0 else 0.0
 
 # measure F1 score
-f1_score = 2 * (precision * recall) / (precision + recall)
+f1_score = (2 * (precision * recall) / (precision + recall)
+            if precision + recall > 0 else 0.0)
 
 # print measured results
 print(10*'-', 'RESULTS', 10*'-')
