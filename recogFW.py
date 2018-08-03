@@ -24,7 +24,7 @@ def recog_foreign_word(word):
             return True
 
     # consists 'ú' inside the word
-    if 'ú' in word[1:]:
+    if 'ú' in word[1:] and word[0] != 'z':
         return True
 
     # combinations of vowels (except 'ou' and 'oo')
@@ -32,18 +32,40 @@ def recog_foreign_word(word):
 
     combinations = list(it.product(vowels, repeat=2))
     del combinations[combinations.index(('o', 'u'))]
-    del combinations[combinations.index(('o', 'o'))]
 
+    allowed_comb = ('doo', 'poo', 'velkoo', 'těžkoo', 'poloo', 'maloo',
+                    'samoo', 'černoo', 'šikmoo', 'světoo', 'světloo', 'tmavoo',
+                    'vodoo', 'celoo', 'proo', 'jednoo', 'perloo', 'středoo',
+                    'dřevoo', 'hnědoo', 'šedoo', 'vyu')
     for pair in combinations:
         comb = pair[0] + pair[1]
-        if comb in word:
+        if comb in word and not any(prefix in word for prefix in allowed_comb):
             return True
 
-    # combinations of consonants (doubled consonants)
+    # doubled consonants
     consonants = 'bcfghlmpqrstvwx'
     for letter in consonants:
         if letter + letter in word:
             return True
+
+    allowed_zz = ('bezz', 'rozz')
+    if 'zz' in word:
+        if not any(prefix in word for prefix in allowed_zz):
+            return True
+
+    # combinations of consonants
+    combinations = ('ajc', 'ajs', 'ajz', 'unk', 'uňk', 'th', 'rm', 'cr',
+                    'elitn')
+
+    for infix in combinations:
+        if infix in word:
+            return True
+
+    if 'ir' in word and not ('šir' in word or 'řir' in word):
+        return True
+
+    if 'sc' in word and 'sch' not in word:
+        return True
 
     # unrespected palatalization after k, h, ch, r
     ke_allowed = ('kerý', 'kev', 'keř', 'kenní', 'keřný', 'keřně', 'kelný',
@@ -98,8 +120,8 @@ def recog_foreign_word(word):
                     'py': ('pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká'),
 
                     'sy': ('syn@', 'synVA', 'sysl', 'syse', 'sytVA', 'syt@',
-                           'syre', 'syro', 'sychr', 'sycha', 'syč', 'syk',
-                           'syp'),
+                           'syre', 'syro', 'sychr', 'sychVA', 'syč', 'syk',
+                           'syp', 'sycVA'),
 
                     # 'vy': ('vys', 'vyš', 'vyk', 'vyd', 'vyž', '#vy'),
 
@@ -142,8 +164,10 @@ def recog_foreign_word(word):
         else:
             transcribed += letter
 
+    allowed_der = ('nský', 'nka', 'nství', 'nstvo')
     if 'VnC' in transcribed or 'Vmb' in transcribed or 'Vmp' in transcribed:
-        return True
+        if not any(word.endswith(der) for der in allowed_der):
+            return True
 
     # foreign morphemes (suffixes, derived suffixes, prefixes, infixes)
     suffixes = ('áž', 'ce', 'en', 'én', 'er', 'ér', 'ie', 'ik', 'in', 'ín',
@@ -222,37 +246,26 @@ def recog_foreign_word(word):
 
     prefixes = ('ab', 'ad', 'an', 'bi', 'de', 'di', 'em', 'en', 'ex', 'im',
                 'ks', 'kš', 'in', 'ko', 're', 'ana', 'ant', 'apo', 'ato',
-                'azo', 'bio', 'des', 'dez', 'dia', 'dis', 'dys', 'eko', 'epi',
-                'erc', 'geo', 'izo', 'kom', 'kon', 'neo', 'non', 'par', 'per',
-                'pre', 'pro', 'sub', 'sur', 'aero', 'agro', 'ante', 'anti',
+                'iso', 'azo', 'bio', 'des', 'dez', 'dia', 'dis', 'dys', 'eko',
+                'epi', 'erc', 'geo', 'izo', 'kom', 'kon', 'neo', 'non', 'par',
+                'pre', 'sub', 'sur', 'aero', 'agro', 'ante', 'anti',
                 'arci', 'auto', 'demo', 'etno', 'euro', 'fero', 'foto', 'giga',
                 'hypo', 'info', 'kata', 'keto', 'kino', 'lino', 'maxi', 'mega',
                 'meta', 'mini', 'mono', 'moto', 'para', 'peta', 'poly', 'post',
-                'taxi', 'tele', 'tera', 'velo', 'vice', 'amino', 'cyber',
-                'disko', 'extra', 'femto', 'gramo', 'hydro', 'hyper', 'infra',
-                'inter', 'intra', 'intro', 'krimi', 'kupro', 'kvazi', 'kyber',
-                'makro', 'mikro', 'nitro', 'porno', 'profi', 'proto', 'quasi',
-                'radio', 'rádio', 'rekta', 'retro', 'servo', 'steno', 'super',
-                'supra', 'tacho', 'termo', 'trafo', 'trans', 'turbo', 'ultra',
-                'vibro', 'video', 'astro', 'mezzo', 'metyl', 'multi', 'balneo',
-                'energo', 'kontra', 'pseudo', 'stereo', 'techno', 'elektro',
-                'travest', 'galvano', 'magneto', 'sciento', 'elektron')
+                'taxi', 'nano', 'tele', 'tera', 'velo', 'vice', 'amino',
+                'cyber', 'disko', 'extra', 'femto', 'gramo', 'hydro', 'hyper',
+                'infra', 'inter', 'intra', 'intro', 'krimi', 'kupro', 'kvazi',
+                'kyber', 'makro', 'mikro', 'nitro', 'porno', 'profi', 'proto',
+                'quasi', 'radio', 'rádio', 'rekta', 'retro', 'servo', 'steno',
+                'super', 'supra', 'tacho', 'termo', 'trafo', 'trans', 'turbo',
+                'ultra', 'vibro', 'video', 'astro', 'mezzo', 'metyl', 'multi',
+                'balneo', 'energo', 'kontra', 'pseudo', 'stereo', 'techno',
+                'elektro', 'travest', 'galvano', 'magneto', 'sciento',
+                'elektron')
 
     for prefix in prefixes:
         if word.startswith(prefix):
             return True
-
-    infixes = ('ajc', 'ajs', 'ajz', 'unk', 'uňk', 'th', 'rm')
-
-    for infix in infixes:
-        if infix in word:
-            return True
-
-    if 'ir' in word and not ('šir' in word or 'řir' in word):
-        return True
-
-    if 'sc' in word and 'sch' not in word:
-        return True
 
     # physical quantities
     quantities = ('lumen', 'ampér', 'volt', 'ohm', 'metr', 'gram', 'litr',
