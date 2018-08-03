@@ -18,24 +18,37 @@ python3 prep-data.py 'data/word-list.tsv' 'data/eval-data-for-annot.tsv'
 4. After that, the manual parallel annotation was made (**+** in the first column means foreign word). First annotator *a1* had no linguistic background (except traditional language courses at the secondary school). Second annotator *a2* had the linguistic background. Both annotated data are available in `data/eval-data-annot-a1.tsv` and `data/eval-data-annot-a2.tsv`.
 
 ## Evaluation
-The measurement of [Precision and Recall](https://en.wikipedia.org/wiki/Precision_and_recall) (and recalculating them to [F1 score](https://en.wikipedia.org/wiki/F1_score)) was used for evaluation of implemented recognition of foreign words.
+First, the inter-annotator agreement (so called [Cohens's kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa)) was measured to compare parallel annotations.
+```bash
+python3 inter-annotator.py 'data/eval-data-annot-a1.tsv' 'data/eval-data-annot-a2.tsv'
+```
+
+Second, the measurement of [Precision and Recall](https://en.wikipedia.org/wiki/Precision_and_recall) (and recalculating them to [F1 score](https://en.wikipedia.org/wiki/F1_score)) was used for evaluation of implemented recognition of foreign words.
 ```bash
 python3 -B evaluate.py 'data/eval-data-annot-a1.tsv'
 python3 -B evaluate.py 'data/eval-data-annot-a2.tsv'
 ```
 
 ## Results
-The automatic recognition of foreign words in the Czech language achieved around 80% success.
+The inter-annotator agreement achieved 76 % success. It corresponds to the linguistic theory that the foreign words vary for each annotator, but there still exists the certain degree of compliance between annotators.
+
+| | |
+| --- | --- |
+| Data 1 | data/eval-data-annot-a1.tsv |
+| Data 2 | data/eval-data-annot-a2.tsv |
+| **Cohen's kappa** | **0.760027566064206** |
+
+The automatic recognition of foreign words in the Czech language achieved around 80 % success.
 
 | Gold data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` |
 | :--- | :--- | :--- |
 | Compared to | `recogFW.py` | `recogFW.py` |
-| Prec | 0.809 | 0.858 |
-| Rec | 0.7938388625592417 | 0.7962085308056872 |
-| **F1** | **0.8013477272256867** | **0.8259501830746223** |
+| Prec | 0.8428927680798005 | 0.85785536159601 |
+| Rec | 0.7699316628701595 | 0.864321608040201 |
+| **F1** | **0.8047619047619047** | **0.8610763454317897** |
 | --- | --- | --- |
 | Size of data | 1000 | 1000 |
-| True-Posit | 335 | 336 |
-| True-Negat | 104 | 56 |
-| False-Posit | 474 | 522 |
-| False-Negat | 87 | 86 |
+| True-Posit | 338 | 344 |
+| True-Negat | 498 | 545 |
+| False-Posit | 63 | 57 |
+| False-Negat | 101 | 54 |
