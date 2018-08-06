@@ -5,6 +5,7 @@
 
 import sys
 
+
 # load manual annotated data
 data1 = list()
 with open(sys.argv[1], mode='r', encoding='utf-8') as f:
@@ -17,6 +18,7 @@ with open(sys.argv[2], mode='r', encoding='utf-8') as f:
     for line in f:
         line = line.rstrip('\n').split('\t')
         data2.append(line)
+
 
 # measure Cohen's kappa
 # probability of agreement by chance (Pe)
@@ -54,6 +56,16 @@ Pa = number_same/len(merged)
 # Cohen's kappa
 K = (Pa - Pe) / (1 - Pe)
 
+
+# save preparation of gold data annotation
+with open(sys.argv[3], mode='w', encoding='utf-8') as f:
+    for entries in list(zip(data1, data2)):
+        if entries[0] == entries[1]:
+            f.write(entries[0][0] + '\t' + entries[0][1] + '\n')
+        else:
+            f.write('?' + '\t' + entries[0][1] + '\n')
+
+
 # print measured results
 print(10*'-', 'RESULTS', 10*'-')
 print('Data 1:', sys.argv[1], sep='\t')
@@ -62,5 +74,10 @@ print('Data 2:', sys.argv[2], sep='\t')
 print()
 
 print("Cohen's kappa:", K, sep='\t')
+print('Number of same:', number_same, sep='\t')
+print('Size of data:', len(merged), sep='\t')
 
+print()
+
+print('Prepared gold data was saved:', sys.argv[3], sep='\t')
 print(29*'-')

@@ -17,16 +17,19 @@ python3 prep-data.py 'data/word-list.tsv' 'data/eval-data-for-annot.tsv'
 
 4. After that, the manual parallel annotation was made (**+** in the first column means foreign word). First annotator *a1* had no linguistic background (except traditional language courses at the secondary school). Second annotator *a2* had the linguistic background. Both annotated data are available in `data/eval-data-annot-a1.tsv` and `data/eval-data-annot-a2.tsv`.
 
+5. The gold data was created with measurement of Cohen's kappa. *A2* according to *Nový akademický slovník cizích slov* (Kraus et al., 2005, Praha: Academia) decided cases which was not clear for both annotators. Prepared gold data are available in `data/gold-data-prep.tsv` (unclear cases are marked by **?**). Complete annotated gold data are available in `data/gold-data-prep-annot-a2.tsv`.
+
 ## Evaluation
-First, the inter-annotator agreement (so called [Cohens's kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa)) was measured to compare parallel annotations.
+First, the inter-annotator agreement (so called [Cohens's kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa)) was measured to compare parallel annotations. Gold data was created with this measurement.
 ```bash
-python3 inter-annotator.py 'data/eval-data-annot-a1.tsv' 'data/eval-data-annot-a2.tsv'
+python3 inter-annotator.py 'data/eval-data-annot-a1.tsv' 'data/eval-data-annot-a2.tsv' 'data/gold-data-prep.tsv'
 ```
 
 Second, the measurement of [Precision and Recall](https://en.wikipedia.org/wiki/Precision_and_recall) (and recalculating them to [F1 score](https://en.wikipedia.org/wiki/F1_score)) was used for evaluation of implemented recognition of foreign words.
 ```bash
 python3 -B evaluate.py 'data/eval-data-annot-a1.tsv'
 python3 -B evaluate.py 'data/eval-data-annot-a2.tsv'
+python3 -B evaluate.py 'data/gold-data-prep-annot-a2.tsv'
 ```
 
 ## Results
@@ -40,15 +43,15 @@ The inter-annotator agreement achieved 76 % success. It corresponds to the lingu
 
 The automatic recognition of foreign words in the Czech language achieved around 80 % success.
 
-| Gold data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` |
-| :--- | :--- | :--- |
-| Compared to | `recogFW.py` | `recogFW.py` |
-| Prec | 0.8428927680798005 | 0.85785536159601 |
-| Rec | 0.7699316628701595 | 0.864321608040201 |
-| **F1** | **0.8047619047619047** | **0.8610763454317897** |
-| --- | --- | --- |
-| Size of data | 1000 | 1000 |
-| True-Posit | 338 | 344 |
-| True-Negat | 498 | 545 |
-| False-Posit | 63 | 57 |
-| False-Negat | 101 | 54 |
+| Gold data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` | `data/gold-data-prep-annot-a2.tsv` |
+| :--- | :--- | :--- | :--- |
+| Compared to | `recogFW.py` | `recogFW.py` | `recogFW.py` |
+| Prec | 0.8428927680798005 | 0.85785536159601 | 0.8653366583541147 |
+| Rec | 0.7699316628701595 | 0.864321608040201 | 0.8610421836228288 |
+| **F1** | **0.8047619047619047** | **0.8610763454317897** | **0.86318407960199** |
+| --- | --- | --- | --- |
+| Size of data | 1000 | 1000 | 1000 |
+| True-Posit | 338 | 344 | 347 |
+| True-Negat | 498 | 545 | 543 |
+| False-Posit | 63 | 57 | 54 |
+| False-Negat | 101 | 54 | 56 |
