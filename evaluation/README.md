@@ -58,12 +58,12 @@ The inter-annotator agreement for parallel annotations achieved 76 % success. It
 
 The automatic recognition of foreign words in the Czech language reached an average of 84 % (F1 score) success. Table bellow shows results of all evaluated files.
 
-| Annotated data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` | `data/gold-data-prep-annot-a2.tsv` | data/eval-data2-annot-a2.tsv |
+| Annotated data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` | `data/gold-data-prep-annot-a2.tsv` | `data/eval-data2-annot-a2.tsv` |
 | :--- | :--- | :--- | :--- | :--- |
 | Compared to | `recogFW.py` | `recogFW.py` | `recogFW.py` | `recogFW.py` |
-| Prec | 0.8387096774193549 | 0.8560794044665012 | 0.8635235732009926 | 0.8341584158415841 |
-| Rec | 0.7699316628701595 | 0.8668341708542714 | 0.8635235732009926 | 0.8776041666666666 |
-| **F1** | **0.8028503562945368** | **0.8614232209737829** | **0.8635235732009926** | **0.8553299492385786** |
+| Prec | 0.83871 | 0.85608 | 0.86352 | 0.83416 |
+| Rec | 0.76993 | 0.86683 | 0.86352 | 0.87760 |
+| **F1** | **0.80285** | **0.86142** | **0.86352** | **0.85533** |
 | --- | --- | --- | --- | --- |
 | Size of data | 1000 | 1000 | 1000 | 1000 |
 | True-Posit | 338 | 345 | 348 | 337 |
