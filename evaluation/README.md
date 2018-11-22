@@ -52,13 +52,13 @@ The inter-annotator agreement for parallel annotations achieved 76 % success. It
 
 | | |
 | --- | --- |
-| Data 1 | data/eval-data-annot-a1.tsv |
-| Data 2 | data/eval-data-annot-a2.tsv |
+| Data 1 | eval-data-annot-a1.tsv |
+| Data 2 | eval-data-annot-a2.tsv |
 | **Cohen's kappa** | **0.760027566064206** |
 
 The automatic recognition of foreign words in the Czech language reached an average of 84 % (F1 score) success. Table bellow shows results of all evaluated files.
 
-| Annotated data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` | `data/gold-data-prep-annot-a2.tsv` | `data/eval-data2-annot-a2.tsv` |
+| Annotated data | `eval-data-annot-a1.tsv` | `eval-data-annot-a2.tsv` | `gold-data-prep-annot-a2.tsv` | `eval-data2-annot-a2.tsv` |
 | :--- | :--- | :--- | :--- | :--- |
 | Compared to | `recogFW.py` | `recogFW.py` | `recogFW.py` | `recogFW.py` |
 | Prec | 0.83871 | 0.85608 | 0.86352 | 0.83416 |
