@@ -3,27 +3,38 @@ This repository contains codes of rule-based approach to the recognition of borr
 
 *Supported by Student's Faculty Grant (SFG) at [Faculty of Mathematics and Physics, Charles University](https://www.mff.cuni.cz/), in the academic year 2017/2018.*
 
+Older versions and their evaluations can be found in GitHub releases. `CHANGELOG.txt` contains list of changes in each version. Current (still open) version is this one (version 2). It reached an average of 84 % (F1 score) success.
+
 ## Usage
 This script can be used both as imported in any project, and as shell script. Bellow, three ways (with examples) how to use this script are described.
 
 **1. Download and import as the function to your Python3 project.**
-Given word must be lemmatized.
+Given word must be lemmatized. Part-of-speech classification (POS) is voluntary, however, it increases precision of recognition. [Hajič's tagset](https://ufal.mff.cuni.cz/pdt/Morphology_and_Tagging/Doc/hmptagqr.html#POS) for POS is assumed.
 ```python
 from recogFW import recog_foreign_word
 
-statement1 = recog_foreign_word('automatický')
-print(statement1)
+word1 = recog_foreign_word('skončit', 'V')
+word2 = recog_foreign_word('skončit')
+word3 = recog_foreign_word('automatický', 'A')
+word4 = recog_foreign_word('automatický')
+
+print(word1, word2, word3, word4)
 ```
 
 **2. Download and use in the shell pipeline.**
-Given word must be lemmatized. If you want to use this way for more words, each word must be on a separate line.
+Given word must be lemmatized. Part-of-speech classification (POS) is voluntary, however, it increases precision of recognition. [Hajič's tagset](https://ufal.mff.cuni.cz/pdt/Morphology_and_Tagging/Doc/hmptagqr.html#POS) for POS is assumed (underscore as a separator). If you want to use this way for more words, each word must be on a separate line.
 ```bash
+echo -e 'skončit_V' | python3 recogFW.py
+echo -e 'skončit' | python3 recogFW.py
 echo -e 'automatický' | python3 recogFW.py
+echo -e 'automatický_A' | python3 recogFW.py
+```
+```bash
 cat 'path-to-input-file' | python3 recogFW.py > 'results.tsv'
 ```
 
 **3. Download and use in the shell for file only.**
-Given word must be lemmatized. Each word must be on a separate line.
+Given word must be lemmatized. Part-of-speech classification (POS) is voluntary, however, it increases precision of recognition. [Hajič's tagset](https://ufal.mff.cuni.cz/pdt/Morphology_and_Tagging/Doc/hmptagqr.html#POS) for POS is assumed (underscore as a separator). Each word must be on a separate line.
 ```bash
 python3 recogFW.py 'path-to-input-file' > 'results.tsv'
 ```
