@@ -18,14 +18,17 @@ with open(sys.argv[1], mode='r', encoding='utf-8') as f:
         lemmas_freq[(entry[1], pos)] += int(entry[0].split()[0])
 
 
-# remove propriums, interpunctions, abbreviations, and lemmas with numbers or
-# punctuations from freq-lemma-list
+# remove propriums, interpunctions, abbreviations, lemmas with numbers or
+# punctuations from freq-lemma-list, and lemmas with X part-of-speech
 remove_from_list = set()
 for lemma in lemmas_freq:
     if lemma[0][0].isupper():  # propriums
         remove_from_list.add(lemma)
 
     if 'Z' in lemma[1]:  # interpunctions
+        remove_from_list.add(lemma)
+
+    if 'X' in lemma[1]:  # X part-of-speech
         remove_from_list.add(lemma)
 
     if '8' in lemma[1]:  # abbreviations
@@ -80,4 +83,4 @@ evaluation_data.append(random.sample(interval1, round(lpi)))
 with open(sys.argv[2], mode='w', encoding='utf-8') as f:
     for interval in evaluation_data:
         for lemma in interval:
-            f.write('\t' + lemma[0] + '\n')
+            f.write('\t' + lemma[0] + '\t' + lemma[1][0] + '\n')

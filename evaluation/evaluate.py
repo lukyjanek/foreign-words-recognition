@@ -8,6 +8,7 @@ import sys
 sys.path.append('../')
 from recogFW import recog_foreign_word
 
+
 # load manual annotated data - gold data
 gold_data = list()
 with open(sys.argv[1], mode='r', encoding='utf-8') as f:
@@ -23,7 +24,11 @@ tp = 0  # true positives
 
 fp_lst = list()
 for entry in gold_data:
-    alg_res = recog_foreign_word(entry[1])
+    alg_res = None
+    if len(entry) == 3:
+        alg_res = recog_foreign_word(entry[1], entry[2])
+    else:
+        alg_res = recog_foreign_word(entry[1])
 
     if entry[0] == '+' and alg_res:
         tp += 1
