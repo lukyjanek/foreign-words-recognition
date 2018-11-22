@@ -19,7 +19,7 @@ zgrep -v '^<' 'syn2015.gz' | cut -d $'\t' -f 1,2,3 | sort | uniq -c | sort -nr >
 python3 prep-data.py 'data/word-list.tsv' 'data/eval-data-for-annot.tsv'
 ```
 
-# Manual annotation
+## Manual annotation
 Two rounds of manual annotations were done.
 
 **First annotation round** was made for final SFG report, so it consists of parallel annotation (**+** in the first column means foreign word) of two annotators *a1* (`data/eval-data-annot-a1.tsv`) and *a2* (`data/eval-data-annot-a2.tsv`). After that, an inter-annotator agreement was measured, both data were merged (`data/gold-data-prep.tsv`) and the annotator *a2* annotated unclear cases (unclear cases are marked by **?**) according to *Nový akademický slovník cizích slov* (Kraus et al., 2005, Praha: Academia). Complete annotated gold data are available in `data/gold-data-prep-annot-a2.tsv`.
