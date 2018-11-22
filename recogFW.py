@@ -9,8 +9,8 @@ import itertools as it
 
 # function for the recognition of foreign word
 # can be imported and used in any project
-def recog_foreign_word(word):
-    '''Return T/F statement if given word (and pos optionaly) is foreign.'''
+def recog_foreign_word(word, pos=None):
+    """Return T/F statement if given word (and pos optionaly) is foreign."""
     word = word.lower()
 
     # foreign letters and czech alphabet
@@ -23,11 +23,16 @@ def recog_foreign_word(word):
         if letter not in alphabeth:
             return True
 
+    # exclude Czech verbs (non-foreign verbs)
+    if pos == 'V' and not word.endswith('vat'):
+        return False
+
     # consists 'ú' inside the word
-    if 'ú' in word[1:] and word[0] != 'z':
+    allowed_u = ('zú', 'zaú', 'poú', 'doú', 'přeú', 'podú', 'předú', 'vyú')
+    if 'ú' in word[1:] and not word.startswith(allowed_u):
         return True
 
-    # combinations of vowels (except 'ou' and 'oo')
+    # combinations of vowels (except 'ou', and some others for comp./afixes)
     vowels = 'aeiyouáéěíýůú'
 
     combinations = list(it.product(vowels, repeat=2))
@@ -36,7 +41,7 @@ def recog_foreign_word(word):
     allowed_comb = ('doo', 'poo', 'velkoo', 'těžkoo', 'poloo', 'maloo',
                     'samoo', 'černoo', 'šikmoo', 'světoo', 'světloo', 'tmavoo',
                     'vodoo', 'celoo', 'proo', 'jednoo', 'perloo', 'středoo',
-                    'dřevoo', 'hnědoo', 'šedoo', 'vyu')
+                    'dřevoo', 'hnědoo', 'šedoo', 'vyu', 'sebeu') + allowed_u
     for pair in combinations:
         comb = pair[0] + pair[1]
         if comb in word and not any(prefix in word for prefix in allowed_comb):
@@ -53,9 +58,15 @@ def recog_foreign_word(word):
         if not any(prefix in word for prefix in allowed_zz):
             return True
 
-    # combinations of consonants
-    combinations = ('ajc', 'ajs', 'ajz', 'unk', 'uňk', 'th', 'rm', 'cr',
-                    'elitn')
+    allowed_kk = ('kký', 'kká', 'kké', 'kko')
+    if 'kk' in word:
+        if not any(part in word for part in allowed_kk):
+            return True
+
+    # combinations of n-grams or roots
+    combinations = ('ajc', 'ajs', 'ajz', 'unk', 'uňk', 'th', 'rm', 'cr', 'dž',
+                    'elitn', 'test', 'kredit', 'habit', 'decim', 'zip', 'data',
+                    'dato')
 
     for infix in combinations:
         if infix in word:
@@ -102,7 +113,7 @@ def recog_foreign_word(word):
         if comb in word:
             return True
 
-    # unrespected y followed by mixed consonants (b, l, m, p, s, v, z)
+    # unrespecting y followed by mixed consonants (b, l, m, p, s, v, z)
     vowels_long = 'áéíýůú'
     vowels_all = 'aeiyouáéěíýůú'
 
@@ -117,7 +128,8 @@ def recog_foreign_word(word):
                     'my': ('myd', 'myt', 'myč', 'myc', 'myj', 'mysl', 'myšl',
                            'myl', 'hmyz', 'myš', 'myk', 'mych'),
 
-                    'py': ('pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká'),
+                    'py': ('pych', 'pyt', 'pyl', 'pysk', 'pyka', 'pyká',
+                           'pyš'),
 
                     'sy': ('syn@', 'synVA', 'sysl', 'syse', 'sytVA', 'syt@',
                            'syre', 'syro', 'sychr', 'sychVA', 'syč', 'syk',
@@ -170,7 +182,7 @@ def recog_foreign_word(word):
             return True
 
     # foreign morphemes (suffixes, derived suffixes, prefixes, infixes)
-    suffixes = ('áž', 'ce', 'en', 'én', 'er', 'ér', 'ie', 'ik', 'in', 'ín',
+    suffixes = ('áž', 'ce', 'en', 'én', 'er', 'ér', 'ie', 'ik', 'ín',
                 'ns', 'on', 'ón', 'or', 'oř', 'os', 'sa', 'se', 'ta', 'um',
                 'má', 'us', 'za', 'ze', 'ace', 'ant', 'bal', 'bus', 'ent',
                 'eus', 'fil', 'fob', 'for', 'ice', 'ida', 'ika', 'ina', 'ína',
@@ -245,23 +257,23 @@ def recog_foreign_word(word):
                 return True
 
     prefixes = ('ab', 'ad', 'an', 'bi', 'de', 'di', 'em', 'en', 'ex', 'im',
-                'ks', 'kš', 'in', 'ko', 're', 'ana', 'ant', 'apo', 'ato',
+                'ks', 'kš', 'in', 'ko', 're', 'ap', 'ana', 'ant', 'apo', 'ato',
                 'iso', 'azo', 'bio', 'des', 'dez', 'dia', 'dis', 'dys', 'eko',
                 'epi', 'erc', 'geo', 'izo', 'kom', 'kon', 'neo', 'non', 'par',
-                'pre', 'sub', 'sur', 'aero', 'agro', 'ante', 'anti',
+                'pre', 'sub', 'sur', 'aero', 'agro', 'ante', 'anti', 'amor',
                 'arci', 'auto', 'demo', 'etno', 'euro', 'fero', 'foto', 'giga',
                 'hypo', 'info', 'kata', 'keto', 'kino', 'lino', 'maxi', 'mega',
                 'meta', 'mini', 'mono', 'moto', 'para', 'peta', 'poly', 'post',
-                'taxi', 'nano', 'tele', 'tera', 'velo', 'vice', 'amino',
-                'cyber', 'disko', 'extra', 'femto', 'gramo', 'hydro', 'hyper',
+                'taxi', 'nano', 'tele', 'tera', 'velo', 'vice', 'orto', 'pedo',
+                'amino', 'cyber', 'disko', 'extra', 'femto', 'gramo', 'hydro',
                 'infra', 'inter', 'intra', 'intro', 'krimi', 'kupro', 'kvazi',
                 'kyber', 'makro', 'mikro', 'nitro', 'porno', 'profi', 'proto',
                 'quasi', 'radio', 'rádio', 'rekta', 'retro', 'servo', 'steno',
                 'super', 'supra', 'tacho', 'termo', 'trafo', 'trans', 'turbo',
                 'ultra', 'vibro', 'video', 'astro', 'mezzo', 'metyl', 'multi',
-                'balneo', 'energo', 'kontra', 'pseudo', 'stereo', 'techno',
-                'elektro', 'travest', 'galvano', 'magneto', 'sciento',
-                'elektron')
+                'hyper', 'amylo', 'balneo', 'energo', 'kontra', 'pseudo',
+                'stereo', 'techno', 'chromo', 'psycho', 'elektro', 'travest',
+                'galvano', 'magneto', 'sciento', 'elektron')
 
     for prefix in prefixes:
         if word.startswith(prefix):
@@ -287,15 +299,15 @@ if __name__ == '__main__':
 
     if not sys.stdin.isatty():  # read from stdin
         for line in sys.stdin:
-            word = line.strip()
-            print(word, recog_foreign_word(word), sep='\t')
+            word = line.strip().split('_')
+            print(word[0], recog_foreign_word(*word), sep='\t')
 
     else:  # read from file
         if len(sys.argv) == 2:
             with open(sys.argv[1], mode='r', encoding='utf-8') as f:
                 for line in f:
-                    word = line.strip()
-                    print(word, recog_foreign_word(word), sep='\t')
+                    word = line.strip().split('_')
+                    print(word[0], recog_foreign_word(*word), sep='\t')
         else:
             print('Error: Use script in pipeline or give the path '
                   'to the relevant file in the first argument.')
