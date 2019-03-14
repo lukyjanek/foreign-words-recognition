@@ -1,7 +1,7 @@
-Version 1 (v1)
+Version 1 (v1) [released in 31 Oct 2018]
 - create script for recognition according to listed linguistic works (in README.md)
 
-Version 2 (v2)
+Version 2 (v2) [still open]
 - add recognition according to part-of-speech, (increased precision especially for verbs)
 - added new allowed vowels combinations
 - fix an unrespecting 'y' followed 'p' (root 'pyš')
