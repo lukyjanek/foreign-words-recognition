@@ -5,6 +5,8 @@ This repository contains codes of rule-based approach to the recognition of borr
 
 Older versions and their evaluations can be found in GitHub releases. `CHANGELOG.txt` contains list of changes in each version. Current (still open) version is this one (version 2). It reached an average of 84 % (F1 score) success.
 
+**License:** CC-BY-NC-SA
+
 ## Usage
 This script can be used both as imported in any project, and as shell script. Bellow, three ways (with examples) how to use this script are described.
 
