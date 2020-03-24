@@ -6,3 +6,5 @@ Version 2 (v2) [released in 24 Mar 2020]
 - added new allowed vowels combinations
 - fix an unrespecting 'y' followed 'p' (root 'pyš')
 - clearing some prefixes
+
+Version 3 (v3) [still open]
